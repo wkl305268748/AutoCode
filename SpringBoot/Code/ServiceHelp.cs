@@ -25,7 +25,7 @@ namespace SpringBoot.Code
             string filePath = pathDir + "\\" + getServiceName(tableName) + ".java";
 
             //创建UTF8无BOM文件
-            var utf8WithBom = new System.Text.UTF8Encoding(true);  // 用true来指定包含bom
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
             StreamWriter writer = new StreamWriter(filePath, false, utf8WithBom);
 
             //写入文件
@@ -88,28 +88,28 @@ namespace SpringBoot.Code
             parameter = parameter.Remove(0, 1);
 
             //调用mapper
-            funciton += string.Format("\t\treturn {0}.insert({1});\r\n", toFirstLow(mapperClass),toFirstLow(modelClass));
-
+            funciton += string.Format("\t\t{0}.insert({1});\r\n", toFirstLow(mapperClass),toFirstLow(modelClass));
+            funciton += string.Format("\t\treturn {0};", toFirstLow(modelClass));
             //生成函数
 
-            return string.Format("\tpublic {0} {1}({2}) throws ErrorCodeException {{\r\n{3}\r\n\t}}", modelClass,"Add"+modelClass,parameter,funciton);
+            return string.Format("\tpublic {0} {1}({2}) {{\r\n{3}\r\n\t}}", modelClass,"Add"+modelClass,parameter,funciton);
         }
         private static string GetEditMethod(string modelClass, string mapperClass, List<Field> fields) {
 
-            string key = "";
+            Field key = new Field();
             //获取主键
             foreach (Field field in fields)
             {
                 if (field.IsKey)
-                    key = field.Name;
+                    key = field;
             }
-            string funciton = string.Format("\t\t{0} {1} = {2}.selectByPrimaryKey({3});\r\n", modelClass, toFirstLow(modelClass),toFirstLow(mapperClass),key);
+            string funciton = string.Format("\t\t{0} {1} = {2}.selectByPrimaryKey({3});\r\n", modelClass, toFirstLow(modelClass),toFirstLow(mapperClass),key.Name);
 
             //异常抛出
             funciton += string.Format("\t\tif({0} == null)\r\n",toFirstLow(modelClass));
             funciton += string.Format("\t\t\tthrow new ErrorCodeException(ErrorCodeException.DATA_NO_ERROR);\r\n");
 
-            string parameter = "";
+            string parameter = key.getJavaTyep() +" "+key.Name;
             foreach (Field field in fields)
             {
                 if (field.IsKey)
@@ -120,10 +120,10 @@ namespace SpringBoot.Code
                 parameter += "," + field.getJavaTyep() + " " + field.getVariableName();
                 funciton += string.Format("\t\t{0}.set{1}({2});\r\n", toFirstLow(modelClass), toFirstUp(field.Name), field.Name);
             }
-            parameter = parameter.Remove(0, 1);
 
             //调用mapper
-            funciton += string.Format("\t\treturn {0}.update({1});\r\n", toFirstLow(mapperClass), toFirstLow(modelClass));
+            funciton += string.Format("\t\t{0}.update({1});\r\n", toFirstLow(mapperClass), toFirstLow(modelClass));
+            funciton += string.Format("\t\treturn {0};", toFirstLow(modelClass));
 
             return string.Format("\tpublic {0} {1}({2}) throws ErrorCodeException {{\r\n{3}\r\n\t}}", modelClass, "Edit" + modelClass, parameter, funciton);
         }
@@ -136,12 +136,12 @@ namespace SpringBoot.Code
                     key = field;
             }
 
-            string funciton = string.Format("\t\t{0} {1} = {2}.selectByPrimaryKey({3});\r\n", modelClass, toFirstLow(modelClass), toFirstLow(mapperClass), key);
+            string funciton = string.Format("\t\t{0} {1} = {2}.selectByPrimaryKey({3});\r\n", modelClass, toFirstLow(modelClass), toFirstLow(mapperClass), key.Name);
             //异常抛出
             funciton += string.Format("\t\tif({0} == null)\r\n", toFirstLow(modelClass));
             funciton += string.Format("\t\t\tthrow new ErrorCodeException(ErrorCodeException.DATA_NO_ERROR);\r\n");
 
-            funciton += string.Format("\t\treturn {0};\r\n", toFirstLow(mapperClass));
+            funciton += string.Format("\t\treturn {0};\r\n", toFirstLow(modelClass));
 
             return string.Format("\tpublic {0} {1}({2} {3}) throws ErrorCodeException {{\r\n{4}\r\n\t}}", modelClass, "Get" + modelClass, key.getJavaTyep(),key.Name, funciton);
 
@@ -156,7 +156,7 @@ namespace SpringBoot.Code
             }
             string funciton = string.Format("\t\treturn {0}.deleteByPrimaryKey({1});\r\n", toFirstLow(mapperClass), key.Name);
 
-            return string.Format("\tpublic {0} {1}({2} {3}) throws ErrorCodeException {{\r\n{4}\r\n\t}}", "int", "Delete" + modelClass, key.getJavaTyep(), key.Name, funciton);
+            return string.Format("\tpublic {0} {1}({2} {3}) {{\r\n{4}\r\n\t}}", "int", "Delete" + modelClass, key.getJavaTyep(), key.Name, funciton);
         }
         private static string GetPageMethod(string modelClass, string mapperClass, List<Field> fields) {
 
@@ -173,7 +173,7 @@ namespace SpringBoot.Code
 
         private static void CreateJson(string path,string package) {
             //创建UTF8无BOM文件
-            var utf8WithBom = new System.Text.UTF8Encoding(true);  // 用true来指定包含bom
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
             //Json
             string pathDir = path + "\\" + "json";
             if (!Directory.Exists(pathDir))
@@ -190,7 +190,7 @@ namespace SpringBoot.Code
         private static void CreateResponse(string path, string package)
         {
             //创建UTF8无BOM文件
-            var utf8WithBom = new System.Text.UTF8Encoding(true);  // 用true来指定包含bom
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
 
             string pathDir = path + "\\" + "json\\response";
             if (!Directory.Exists(pathDir))
@@ -207,7 +207,7 @@ namespace SpringBoot.Code
         private static void CreateErrorCode(string path, string package)
         {
             //创建UTF8无BOM文件
-            var utf8WithBom = new System.Text.UTF8Encoding(true);  // 用true来指定包含bom
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
 
             string pathDir = path + "\\" + "exception";
             if (!Directory.Exists(pathDir))
@@ -224,7 +224,7 @@ namespace SpringBoot.Code
         private static void CreateErrorCodeException(string path, string package)
         {
             //创建UTF8无BOM文件
-            var utf8WithBom = new System.Text.UTF8Encoding(true);  // 用true来指定包含bom
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
 
             string pathDir = path + "\\" + "exception";
             if (!Directory.Exists(pathDir))

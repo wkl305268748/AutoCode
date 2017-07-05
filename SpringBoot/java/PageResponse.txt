@@ -1,21 +1,15 @@
 package #package#.json.response;
 
-
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
 /**
  * #notes#
  */
 public class PageResponse<T> {
-    @ApiModelProperty("总数")
+
     private Integer total;
-    @ApiModelProperty("从第几个开始")
     private Integer offset;
-    @ApiModelProperty("每页数量")
     private Integer pageSize;
-    @ApiModelProperty("内容列表")
     private List<T> item;
 
     public PageResponse(){}

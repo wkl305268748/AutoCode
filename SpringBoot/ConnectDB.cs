@@ -21,8 +21,8 @@ namespace SpringBoot
 
         private void BtnSuccess_Click(object sender, EventArgs e)
         {
-            //connectStr = String.Format("server={0};user id={1};password={2};port={3};", texthost.Text, textuser.Text, textpass.Text,textport.Text);
-            connectStr = String.Format("server={0};user id={1};password={2};port={3};", "rm-bp1d79mlswd465ue0o.mysql.rds.aliyuncs.com", textuser.Text, "Avatar123", textport.Text);
+            connectStr = String.Format("server={0};user id={1};password={2};port={3};", texthost.Text, textuser.Text, textpass.Text,textport.Text);
+            //connectStr = String.Format("server={0};user id={1};password={2};port={3};", "rm-bp1d79mlswd465ue0o.mysql.rds.aliyuncs.com", textuser.Text, "Avatar123", textport.Text);
             
         }
 

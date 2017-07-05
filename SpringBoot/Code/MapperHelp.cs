@@ -21,7 +21,7 @@ namespace SpringBoot.Code
             string filePath = pathDir + "\\" + getMapperName(tableName) + ".java";
 
             //创建UTF8无BOM文件
-            var utf8WithBom = new System.Text.UTF8Encoding(true);  // 用true来指定包含bom
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
             StreamWriter writer = new StreamWriter(filePath, false, utf8WithBom);
 
             //写入文件

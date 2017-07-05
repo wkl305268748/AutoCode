@@ -33,14 +33,21 @@ namespace SpringBoot
             if (connectDb.ShowDialog() == DialogResult.OK)
             {
                 DbHelperMySQL.connectionString = connectDb.connectStr;
-                MySqlDataReader reader = DbHelperMySQL.ExecuteReader("show databases;");
 
-                imageListBoxControl.Items.Clear();
-                while (reader.Read())
+                try
                 {
-                    imageListBoxControl.Items.Add(reader.GetString(0), 0);
+                    MySqlDataReader reader = DbHelperMySQL.ExecuteReader("show databases;");
+
+                    imageListBoxControl.Items.Clear();
+                    while (reader.Read())
+                    {
+                        imageListBoxControl.Items.Add(reader.GetString(0), 0);
+                    }
+                    reader.Close();
                 }
-                reader.Close();
+                catch (Exception ee) {
+                    MessageBox.Show("数据库连接失败");
+                }
 
             }
         }
