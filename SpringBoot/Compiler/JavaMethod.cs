@@ -35,8 +35,10 @@ namespace SpringBoot.Compiler
         /// </summary>
         /// <param name="mType"></param>
         /// <param name="mName"></param>
-        public void addParam(string mType,string mName){
+        public JavaMethod addParam(string mType, string mName)
+        {
             mParam.Add(mType + " " + mName);
+            return this;
         }
 
         /// <summary>
@@ -45,29 +47,39 @@ namespace SpringBoot.Compiler
         /// <param name="mAnnotation"></param>
         /// <param name="mType"></param>
         /// <param name="mName"></param>
-        public void addParam(string mAnnotation,string mType, string mName) {
+        public JavaMethod addParam(string mAnnotation, string mType, string mName)
+        {
             mParam.Add(mAnnotation + mType + " " + mName);
             isAnnotation = true;
+            return this;
         }
 
         /// <summary>
         /// 添加函数注解
         /// </summary>
         /// <param name="annotation"></param>
-        public void addAnnotation(string annotation) {
+        public JavaMethod addAnnotation(string annotation)
+        {
             mAnnotation.Add(annotation);
+            return this;
         }
 
         /// <summary>
         /// 添加函数内部语句
         /// </summary>
         /// <param name="code"></param>
-        public JavaLogicNo addLogicNo(string code){
+        public JavaLogicNo addLogicNo(string code)
+        {
             JavaLogicNo logicNo = new JavaLogicNo(code, indent + 1);
             mMethodCode.Add(logicNo);
             return logicNo;
         }
 
+        /// <summary>
+        /// 添加if语句
+        /// </summary>
+        /// <param name="mif"></param>
+        /// <returns></returns>
         public JavaLogicIf addLogicIf(string mif)
         {
             JavaLogicIf logic = new JavaLogicIf(mif, indent + 1);
@@ -85,7 +97,7 @@ namespace SpringBoot.Compiler
             }
             //函数
             //无注解
-            if (isAnnotation)
+            if (!isAnnotation)
             {
                 string param = "";
                 for (int i = 0; i < mParam.Count; i++)
@@ -97,13 +109,13 @@ namespace SpringBoot.Compiler
                     }
                     param += "," + mParam[i];
                 }
-                result.Add(mIndent + string.Format("public {0}{1}({2}){{", mReturn, mName, param));
+                result.Add(mIndent + string.Format("public {0} {1}({2}){{", mReturn, mName, param));
             }
             else
             {
                 //有注解
-                int length = string.Format("public {0}{1}(", mReturn, mName).Length;
-                result.Add(mIndent + string.Format("public {0}{1}({2},", mReturn, mName,mParam[0]));
+                int length = string.Format("public {0} {1}(", mReturn, mName).Length;
+                result.Add(mIndent + string.Format("public {0} {1}({2},", mReturn, mName,mParam[0]));
 
                 for (int i = 1; i < mParam.Count; i++)
                 {

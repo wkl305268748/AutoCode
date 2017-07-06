@@ -10,6 +10,7 @@ namespace SpringBoot.Compiler
         List<JavaMethod> mJavaMethod;
         List<string> mImport;
         List<string> mAnnotation;
+        List<string> mValue;
         string mPackage;
         string mName;
         int indent = 0;
@@ -21,6 +22,7 @@ namespace SpringBoot.Compiler
             mJavaMethod = new List<JavaMethod>();
             mImport = new List<string>();
             mAnnotation = new List<string>();
+            mValue = new List<string>();
         }
 
         /// <summary>
@@ -40,10 +42,31 @@ namespace SpringBoot.Compiler
         }
 
         /// <summary>
+        /// 添加变量
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        public void AddValue(string type,string value) {
+            mValue.Add(string.Format("private {0} {1};", type, value));
+        }
+
+        /// <summary>
+        /// 添加带注解变量
+        /// </summary>
+        /// <param name="annotation"></param>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        public void AddValue(string annotation,string type,string value)
+        {
+            mValue.Add(annotation);
+            mValue.Add(string.Format("private {0} {1};", type, value));
+        }
+
+        /// <summary>
         /// 创建函数
         /// </summary>
         /// <param name="methords"></param>
-        public JavaMethod CreateMethord(string name,string mreturn) {
+        public JavaMethod AddMethord(string name,string mreturn) {
             JavaMethod method = new JavaMethod(name, mreturn, indent + 1);
             mJavaMethod.Add(method);
             return method;
@@ -54,6 +77,7 @@ namespace SpringBoot.Compiler
             List<string> result = new List<string>();
             //增加缩进
             string mIndent = new string('\t', indent);
+            string mIndentIn = new string('\t', indent + 1);
             //包名
             result.Add(mIndent + string.Format("package {0};",mPackage));
             result.Add("");
@@ -69,6 +93,12 @@ namespace SpringBoot.Compiler
             }
             //类开头
             result.Add(mIndent + string.Format("public class {0}{{", mName));
+            //类变量
+            foreach (string value in mValue)
+            {
+                result.Add(mIndentIn + value);
+            }
+            result.Add("");
             //类内容，各个函数
             foreach (JavaMethod code in mJavaMethod) { 
                 result.AddRange(code.toListString());

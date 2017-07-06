@@ -19,6 +19,7 @@ namespace SpringBoot.Compiler
         {
             this.indent = indent;
             codes = new List<string>();
+            codes.Add(code);
         }
         
         public List<string> toListString()

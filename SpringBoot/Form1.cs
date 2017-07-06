@@ -12,6 +12,8 @@ using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
 using SpringBoot.Model;
 using SpringBoot.Code;
+using SpringBoot.DB;
+using SpringBoot.Auto;
 
 namespace SpringBoot
 {
@@ -141,6 +143,8 @@ namespace SpringBoot
                 {
                     //UI刷新
                     ((BackgroundWorker)sender).ReportProgress(index,item.Value);
+                    DbTable dbTalbe = new DbTable();
+                    dbTalbe.Name = item.Value.ToString();
 
                     List <Field> fieldList = new List<Field>();
                     //查询字段
@@ -160,14 +164,26 @@ namespace SpringBoot
                         else
                             field.IsKey = false;
 
-
                         field.Notes = reader.GetString("column_comment");
                         fieldList.Add(field);
+
+
+                        DbColumn column = new DbColumn();
+                        column.Name = reader.GetString("column_name");
+                        column.Type = reader.GetString("data_type");
+                        if (reader.GetString("column_key").Equals("PRI"))
+                            column.IsKey = true;
+                        else
+                            column.IsKey = false;
+
+                        column.Notes = reader.GetString("column_comment");
+                        dbTalbe.Column.Add(column);
                     }
                     //创建Model
                     if (checkModel.Checked)
                     {
-                        ModelHelp.CreateModel(buttonPath.Text, textPackage.Text, tableName, fieldList);
+                        //ModelHelp.CreateModel(buttonPath.Text, textPackage.Text, tableName, fieldList);
+                        AutoModel.CreateModel(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                     //创建Mapper
                     if (checkMapper.Checked)

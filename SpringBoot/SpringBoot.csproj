@@ -57,6 +57,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auto\AutoClass.cs" />
+    <Compile Include="Auto\AutoModel.cs" />
     <Compile Include="Code\ClassHelp.cs" />
     <Compile Include="Code\ServiceHelp.cs" />
     <Compile Include="Code\MapperHelp.cs" />
@@ -74,6 +76,9 @@
     <Compile Include="ConnectDB.Designer.cs">
       <DependentUpon>ConnectDB.cs</DependentUpon>
     </Compile>
+    <Compile Include="DB\DbColumn.cs" />
+    <Compile Include="DB\DataBase.cs" />
+    <Compile Include="DB\DbTable.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
