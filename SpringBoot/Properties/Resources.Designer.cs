@@ -83,7 +83,10 @@ namespace SpringBoot.Properties {
         ///    public ErrorCode(int code, String msg, boolean success) {
         ///        this.code = code;
         ///        this.msg = msg;
-        ///        this.success  [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        ///        this.success = success;
+        ///    }
+        ///
+        ///     [字符串的其余部分被截断]&quot;; 的本地化字符串。
         /// </summary>
         internal static string ErrorCode {
             get {
@@ -101,7 +104,8 @@ namespace SpringBoot.Properties {
         ///public class ErrorCodeException extends Exception{
         ///
         ///    ErrorCode errorCode;
-        ///    public static final ErrorCode PARAM_ERROR = new ErrorCode(1, &quot;参数错误&quot;);
+        ///    public static final ErrorCode PARAM_ERROR = new ErrorCode(101, &quot;参数错误&quot;);
+        ///    public static final ErrorCode DATA_NO_ERROR = new ErrorCode(102, &quot;数据不存在&quot;);
         ///
         ///    public ErrorCodeException(ErrorCode errorCode){
         ///        this.errorCode = errorCode;
@@ -145,7 +149,7 @@ namespace SpringBoot.Properties {
         ///    }
         ///
         ///    public JsonBean(ErrorCode errorCode) {
-        ///        this.err [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        ///        this.error_code = errorCode.getCo [字符串的其余部分被截断]&quot;; 的本地化字符串。
         /// </summary>
         internal static string JsonBean {
             get {
@@ -156,22 +160,16 @@ namespace SpringBoot.Properties {
         /// <summary>
         ///   查找类似 package #package#.json.response;
         ///
-        ///
-        ///import io.swagger.annotations.ApiModelProperty;
-        ///
         ///import java.util.List;
         ///
         ////**
         /// * #notes#
         /// */
         ///public class PageResponse&lt;T&gt; {
-        ///    @ApiModelProperty(&quot;总数&quot;)
+        ///
         ///    private Integer total;
-        ///    @ApiModelProperty(&quot;从第几个开始&quot;)
         ///    private Integer offset;
-        ///    @ApiModelProperty(&quot;每页数量&quot;)
         ///    private Integer pageSize;
-        ///    @ApiModelProperty(&quot;内容列表&quot;)
         ///    private List&lt;T&gt; item;
         ///
         ///    public PageResponse(){}
@@ -180,7 +178,16 @@ namespace SpringBoot.Properties {
         ///        return total;
         ///    }
         ///
-        ///    pu [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        ///    public void setTotal(Integer total) {
+        ///        this.total = total;
+        ///    }
+        ///
+        ///    public Integer getOffset() {
+        ///        return offset;
+        ///    }
+        ///
+        ///    public void setOffset(Integer offset) {
+        ///        this.offs [字符串的其余部分被截断]&quot;; 的本地化字符串。
         /// </summary>
         internal static string PageResponse {
             get {

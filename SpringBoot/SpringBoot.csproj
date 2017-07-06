@@ -62,6 +62,12 @@
     <Compile Include="Code\MapperHelp.cs" />
     <Compile Include="Code\ModelHelp.cs" />
     <Compile Include="Code\ControllerHelp.cs" />
+    <Compile Include="Compiler\IJavaLogic.cs" />
+    <Compile Include="Compiler\JavaClass.cs" />
+    <Compile Include="Compiler\JavaLogicNo.cs" />
+    <Compile Include="Compiler\JavaMethod.cs" />
+    <Compile Include="Compiler\JavaLogicIf.cs" />
+    <Compile Include="Compiler\JavaPackage.cs" />
     <Compile Include="ConnectDB.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,6 +90,7 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -105,20 +112,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\db.png" />
+    <None Include="Resources\ErrorCode.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="java\ErrorCode.txt" />
+    <None Include="Resources\ErrorCodeException.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="java\ErrorCodeException.txt" />
+    <None Include="Resources\JsonBean.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="java\JsonBean.txt" />
+    <None Include="Resources\PageResponse.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="java\PageResponse.txt" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
