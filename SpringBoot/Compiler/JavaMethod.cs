@@ -9,10 +9,13 @@ namespace SpringBoot.Compiler
     {
         string mName;
         string mReturn;
+        string mThrow;
         List<string> mParam;
         List<IJavaLogic> mMethodCode;
         List<string> mAnnotation;
         bool isAnnotation;
+        bool isInterface;
+        bool isException;
         int indent;
 
         /// <summary>
@@ -28,6 +31,14 @@ namespace SpringBoot.Compiler
             mAnnotation = new List<string>();
             this.isAnnotation = false;
             this.indent = indent;
+            this.isInterface = false;
+            this.isException = false;
+            mThrow = "";
+        }
+
+        public JavaMethod(string mname, string mreturn, int indent,bool isInterface):this(mname,mreturn,indent)
+        {
+            this.isInterface = true;
         }
 
         /// <summary>
@@ -65,6 +76,16 @@ namespace SpringBoot.Compiler
         }
 
         /// <summary>
+        /// 增加异常抛出
+        /// </summary>
+        /// <returns></returns>
+        public JavaMethod addThrow(string mthrow) {
+            isException = true;
+            this.mThrow = " throws " + mthrow;
+            return this;
+        }
+
+        /// <summary>
         /// 添加函数内部语句
         /// </summary>
         /// <param name="code"></param>
@@ -87,12 +108,17 @@ namespace SpringBoot.Compiler
             return logic;
         }
 
-        public List<string> toListString() {
+
+        public List<string> toListString()
+        {
+            if (isInterface)
+                return toInterfaceStringList();
             List<string> result = new List<string>();
             //增加缩进
             string mIndent = new string('\t', indent);
             //注解
-            foreach (string ann in mAnnotation) {
+            foreach (string ann in mAnnotation)
+            {
                 result.Add(mIndent + ann);
             }
             //函数
@@ -109,28 +135,80 @@ namespace SpringBoot.Compiler
                     }
                     param += "," + mParam[i];
                 }
-                result.Add(mIndent + string.Format("public {0} {1}({2}){{", mReturn, mName, param));
+                result.Add(mIndent + string.Format("public {0} {1}({2}){3}{{", mReturn, mName, param,mThrow));
             }
             else
             {
                 //有注解
                 int length = string.Format("public {0} {1}(", mReturn, mName).Length;
-                result.Add(mIndent + string.Format("public {0} {1}({2},", mReturn, mName,mParam[0]));
-
+                if (mParam.Count == 1)
+                    result.Add(mIndent + string.Format("public {0} {1}({2}){3}{{", mReturn, mName, mParam[0],mThrow));
+                else
+                    result.Add(mIndent + string.Format("public {0} {1}({2},", mReturn, mName, mParam[0]));
+                
                 for (int i = 1; i < mParam.Count; i++)
                 {
-                    if (i == mParam.Count - 1) {
-                        result.Add(mIndent + new string(' ', length) + mParam[i] + "){");
+                    if (i == mParam.Count - 1)
+                    {
+                        result.Add(mIndent + new string(' ', length) + string.Format("{0}){1}{{", mParam[i], mThrow);
                         break;
                     }
                     result.Add(mIndent + new string(' ', length) + mParam[i] + ",");
                 }
             }
             //内部语句
-            foreach (IJavaLogic code in mMethodCode) {
+            foreach (IJavaLogic code in mMethodCode)
+            {
                 result.AddRange(code.toListString());
             }
             result.Add(mIndent + "}");
+            return result;
+        }
+
+        private List<string> toInterfaceStringList() {
+            List<string> result = new List<string>();
+            //增加缩进
+            string mIndent = new string('\t', indent);
+            //注解
+            foreach (string ann in mAnnotation)
+            {
+                result.Add(mIndent + ann);
+            }
+            //函数
+            //无注解
+            if (!isAnnotation)
+            {
+                string param = "";
+                for (int i = 0; i < mParam.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        param += mParam[i];
+                        continue;
+                    }
+                    param += "," + mParam[i];
+                }
+                result.Add(mIndent + string.Format("{0} {1}({2});", mReturn, mName, param));
+            }
+            else
+            {
+                //有注解
+                int length = string.Format("{0} {1}(", mReturn, mName).Length;
+                if (mParam.Count == 1)
+                    result.Add(mIndent + string.Format("{0} {1}({2});", mReturn, mName, mParam[0]));
+                else
+                    result.Add(mIndent + string.Format("{0} {1}({2},", mReturn, mName, mParam[0]));
+                
+                for (int i = 1; i < mParam.Count; i++)
+                {
+                    if (i == mParam.Count - 1)
+                    {
+                        result.Add(mIndent + new string(' ', length) + mParam[i] + ");");
+                        break;
+                    }
+                    result.Add(mIndent + new string(' ', length) + mParam[i] + ",");
+                }
+            }
             return result;
         }
     }

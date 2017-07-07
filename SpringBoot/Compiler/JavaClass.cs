@@ -14,6 +14,7 @@ namespace SpringBoot.Compiler
         string mPackage;
         string mName;
         int indent = 0;
+        bool isInterface;
 
 
         public JavaClass(string name,string package) {
@@ -23,22 +24,29 @@ namespace SpringBoot.Compiler
             mImport = new List<string>();
             mAnnotation = new List<string>();
             mValue = new List<string>();
+            isInterface = false;
+        }
+
+        public JavaClass(string name, string package, bool isInterface) : this(name, package){
+            isInterface = true;
         }
 
         /// <summary>
         /// 增加引用
         /// </summary>
         /// <param name="import"></param>
-        public void AddImpoert(string import) {
+        public JavaClass AddImpoert(string import) {
             mImport.Add(import);
+            return this;
         }
 
         /// <summary>
         /// 增加注解
         /// </summary>
         /// <param name="annotation"></param>
-        public void AddAnnotation(string annotation) {
+        public JavaClass AddAnnotation(string annotation) {
             mAnnotation.Add(annotation);
+            return this;
         }
 
         /// <summary>
@@ -46,8 +54,9 @@ namespace SpringBoot.Compiler
         /// </summary>
         /// <param name="type"></param>
         /// <param name="value"></param>
-        public void AddValue(string type,string value) {
+        public JavaClass AddValue(string type,string value) {
             mValue.Add(string.Format("private {0} {1};", type, value));
+            return this;
         }
 
         /// <summary>
@@ -56,10 +65,11 @@ namespace SpringBoot.Compiler
         /// <param name="annotation"></param>
         /// <param name="type"></param>
         /// <param name="value"></param>
-        public void AddValue(string annotation,string type,string value)
+        public JavaClass AddValue(string annotation,string type,string value)
         {
             mValue.Add(annotation);
             mValue.Add(string.Format("private {0} {1};", type, value));
+            return this;
         }
 
         /// <summary>
@@ -72,6 +82,17 @@ namespace SpringBoot.Compiler
             return method;
         }
 
+        /// <summary>
+        /// 创建接口函数
+        /// </summary>
+        /// <param name="methords"></param>
+        public JavaMethod AddInterfaceMethord(string name, string mreturn)
+        {
+            JavaMethod method = new JavaMethod(name, mreturn, indent + 1, true);
+            mJavaMethod.Add(method);
+            return method;
+        }
+
         public List<string> toListString()
         {
             List<string> result = new List<string>();
@@ -79,11 +100,12 @@ namespace SpringBoot.Compiler
             string mIndent = new string('\t', indent);
             string mIndentIn = new string('\t', indent + 1);
             //包名
-            result.Add(mIndent + string.Format("package {0};",mPackage));
+            result.Add(mIndent + string.Format("package {0};", mPackage));
             result.Add("");
             //引用
-            foreach (string import in mImport) {
-                result.Add(mIndent + string.Format("import {0};",import));
+            foreach (string import in mImport)
+            {
+                result.Add(mIndent + string.Format("import {0};", import));
             }
             result.Add("");
             //注解
@@ -91,8 +113,17 @@ namespace SpringBoot.Compiler
             {
                 result.Add(mIndent + ann);
             }
-            //类开头
-            result.Add(mIndent + string.Format("public class {0}{{", mName));
+
+            //接口的调用方法
+            if (isInterface)
+            {
+                result.Add(mIndent + string.Format("public interface {0}{{", mName));
+            }
+            else
+            {
+                //类开头
+                result.Add(mIndent + string.Format("public class {0}{{", mName));
+            }
             //类变量
             foreach (string value in mValue)
             {
@@ -100,12 +131,14 @@ namespace SpringBoot.Compiler
             }
             result.Add("");
             //类内容，各个函数
-            foreach (JavaMethod code in mJavaMethod) { 
+            foreach (JavaMethod code in mJavaMethod)
+            {
                 result.AddRange(code.toListString());
                 result.Add("");
             }
             //类结束
             result.Add(mIndent + "}");
+
             return result;
         }
     }

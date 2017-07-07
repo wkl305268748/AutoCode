@@ -58,6 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auto\AutoClass.cs" />
+    <Compile Include="Auto\AutoService.cs" />
+    <Compile Include="Auto\AutoMapper.cs" />
     <Compile Include="Auto\AutoModel.cs" />
     <Compile Include="Code\ClassHelp.cs" />
     <Compile Include="Code\ServiceHelp.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="Code\ControllerHelp.cs" />
     <Compile Include="Compiler\IJavaLogic.cs" />
     <Compile Include="Compiler\JavaClass.cs" />
+    <Compile Include="Compiler\JavaLogicException.cs" />
     <Compile Include="Compiler\JavaLogicNo.cs" />
     <Compile Include="Compiler\JavaMethod.cs" />
     <Compile Include="Compiler\JavaLogicIf.cs" />

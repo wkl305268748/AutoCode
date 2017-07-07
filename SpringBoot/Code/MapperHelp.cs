@@ -30,7 +30,6 @@ namespace SpringBoot.Code
             writer.WriteLine();
             //引入头文件
             writer.WriteLine(getImport("java.util.List"));
-            writer.WriteLine(getImport("org.mapstruct.Mapper"));
             writer.WriteLine(getImport("org.apache.ibatis.annotations.*"));
             writer.WriteLine(getImport(pageName+".model.*"));
             writer.WriteLine();

@@ -188,7 +188,8 @@ namespace SpringBoot
                     //创建Mapper
                     if (checkMapper.Checked)
                     {
-                        MapperHelp.CreateMapper(buttonPath.Text, textPackage.Text, tableName, fieldList);
+                        //MapperHelp.CreateMapper(buttonPath.Text, textPackage.Text, tableName, fieldList);
+                        AutoMapper.CreateMapper(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                     //创建Service
                     if (checkService.Checked)

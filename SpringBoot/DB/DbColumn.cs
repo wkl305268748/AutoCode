@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SpringBoot.DB
 {
-    class DbColumn
+    public class DbColumn
     {
         string name;
         string type;
@@ -107,8 +107,13 @@ namespace SpringBoot.DB
             }
         }
 
+        /// <summary>
+        /// 获取SQL对应的Java类型
+        /// </summary>
+        /// <returns></returns>
         public string getJavaTyep() {
             return sqlTojava[type];
         }
+
     }
 }

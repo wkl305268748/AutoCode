@@ -22,6 +22,10 @@ namespace SpringBoot.DB
             set { column = value; }
         }
 
+        /// <summary>
+        /// 获取表对应的Java类名称
+        /// </summary>
+        /// <returns></returns>
         public string getClassName() {
             List<string> begin = new List<string>();
             begin.Add("tb_");
@@ -32,6 +36,18 @@ namespace SpringBoot.DB
                 }
             }
             return name;
+        }
+
+        /// <summary>
+        /// 获取主键
+        /// </summary>
+        /// <returns></returns>
+        public DbColumn getColumnKey() {
+            foreach (DbColumn col in column) {
+                if (col.IsKey)
+                    return col;
+            }
+            return null;
         }
     }
 }
