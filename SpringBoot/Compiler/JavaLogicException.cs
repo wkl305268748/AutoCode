@@ -29,18 +29,20 @@ namespace SpringBoot.Compiler
         /// 添加一个Try语句
         /// </summary>
         /// <param name="code"></param>
-        public void addTryCode(string code)
+        public JavaLogicException addTryCode(string code)
         {
             mTry.Add(code);
+            return this;
         }
 
         /// <summary>
         /// 添加一个Catch语句
         /// </summary>
         /// <param name="code"></param>
-        public void addCatchCode(string code)
+        public JavaLogicException addCatchCode(string code)
         {
             mCatch.Add(code);
+            return this;
         }
 
         /// <summary>

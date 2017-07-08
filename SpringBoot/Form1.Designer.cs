@@ -90,8 +90,8 @@
             this.barBtnConnectDB.Id = 1;
             this.barBtnConnectDB.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barBtnConnectDB.LargeGlyph")));
             this.barBtnConnectDB.Name = "barBtnConnectDB";
-            this.barBtnConnectDB.RibbonStyle = ((DevExpress.XtraBars.Ribbon.RibbonItemStyles)(((DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large | DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithText)
-                        | DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithoutText)));
+            this.barBtnConnectDB.RibbonStyle = ((DevExpress.XtraBars.Ribbon.RibbonItemStyles)(((DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large | DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithText) 
+            | DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithoutText)));
             this.barBtnConnectDB.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barBtnConnectDB_ItemClick);
             // 
             // ribbonPage1
@@ -286,7 +286,7 @@
             // 
             // textPackage
             // 
-            this.textPackage.EditValue = "com.avatarcn";
+            this.textPackage.EditValue = "com.kenny.service.logistics";
             this.textPackage.Location = new System.Drawing.Point(193, 79);
             this.textPackage.MenuManager = this.ribbonControl1;
             this.textPackage.Name = "textPackage";

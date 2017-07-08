@@ -5,6 +5,7 @@ using System.Text;
 using SpringBoot.Model;
 using SpringBoot.Compiler;
 using SpringBoot.DB;
+using System.IO;
 
 namespace SpringBoot.Auto
 {
@@ -26,8 +27,9 @@ namespace SpringBoot.Auto
                 .AddImpoert("java.util.List")
                 .AddImpoert("java.util.Date")
                 .AddImpoert("java.util.ArrayList")
-                .AddImpoert(string.Format(".json.response.*", package))
-                .AddImpoert(string.Format(".exception.*", package,model_class))
+                .AddImpoert(string.Format("{0}.json.response.PageResponse", package))
+                .AddImpoert(string.Format("{0}.exception.ErrorCodeException", package))
+                .AddImpoert(string.Format("{0}.model.{1}", package,model_class))
                 .AddImpoert(string.Format("{0}.mapper.{1}", package, mapper_class));
             //添加注解
             javaClass.AddAnnotation("@Service")
@@ -35,36 +37,93 @@ namespace SpringBoot.Auto
 
 
             //Insert函数
-            JavaMethod insert = javaClass.AddInterfaceMethord("Insert", model_class)
-                .addParam(model_class, model_value);
+            //--------------------
+            JavaMethod insert = javaClass.AddMethord("insert", model_class);
             foreach (DbColumn col in table.Column){
                 if (!col.IsKey)
                     insert.addParam(col.getJavaTyep(), col.Name);
             }
-            insert.addLogicNo(string.Format("{0} {1} = new {0}", model_class, model_value));
+            insert.addLogicNo(string.Format("{0} {1} = new {0}();", model_class, model_value));
+            //set语句
+            foreach (DbColumn col in table.Column)
+            {
+                if (!col.IsKey)
+                    insert.addLogicNo(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+            }
+            insert.addLogicNo(string.Format("{0}.insert({1});",mapper_value,model_value));
+            insert.addLogicNo(string.Format("return {0};", model_value));
 
-                //update函数
-            javaClass.AddInterfaceMethord("update", "model_class")
-                .addThrow("ErrorCodeException")
-                .addParam(model_class, model_value);
+            //update函数
+            //------------------
+            JavaMethod update = javaClass.AddMethord("update", model_class)
+                .addThrow("ErrorCodeException");
+            foreach (DbColumn col in table.Column)
+            {
+                update.addParam(col.getJavaTyep(), col.Name);
+            }
+            update.addLogicNo(string.Format("{0} {1} = {2}.selectByPrimaryKey({3});",model_class,model_value,mapper_value,table.getColumnKey().Name));
+            update.addLogicIf(string.Format("{0} == null", model_value))
+                .addIfCode("throw new ErrorCodeException(ErrorCodeException.DATA_NO_ERROR);");
+            //set语句
+            foreach (DbColumn col in table.Column)
+            {
+                if (!col.IsKey)
+                    update.addLogicNo(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+            }
+            update.addLogicNo(string.Format("{0}.update({1});", mapper_value, model_value));
+            update.addLogicNo(string.Format("return {0};", model_value));
 
             //selectByPrimaryKey函数
-            javaClass.AddInterfaceMethord("selectByPrimaryKey", model_class)
+            //------------------
+            JavaMethod selectByPrimaryKey = javaClass.AddMethord("selectByPrimaryKey", model_class)
                 .addThrow("ErrorCodeException")
                 .addParam(table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
+            selectByPrimaryKey.addLogicNo(string.Format("{0} {1} = {2}.selectByPrimaryKey({3});", model_class, model_value, mapper_value, table.getColumnKey().Name));
+            selectByPrimaryKey.addLogicIf(string.Format("{0} == null", model_value))
+                .addIfCode("throw new ErrorCodeException(ErrorCodeException.DATA_NO_ERROR);");
+            selectByPrimaryKey.addLogicNo(string.Format("return {0};", model_value));
 
             //selectPage函数
-            javaClass.AddInterfaceMethord("selectPage", string.Format("PageResponse<{0}>", model_class))
+            //------------------
+            JavaMethod selectPage = javaClass.AddMethord("selectPage", string.Format("PageResponse<{0}>", model_class))
                 .addParam("Integer", "offset")
                 .addParam("Integer", "pageSize");
+            selectPage.addLogicNo(string.Format("PageResponse<{0}> response = new PageResponse();",model_class));
+            selectPage.addLogicNo(string.Format("response.setItem({0}.selectPage(offset,pageSize));", mapper_value));
+            selectPage.addLogicNo(string.Format("response.setTotal({0}.count());", mapper_value));
+            selectPage.addLogicNo("response.setOffset(offset);");
+            selectPage.addLogicNo("response.setPageSize(pageSize);");
+            selectPage.addLogicNo("return response;");
 
             //deletePrimaryKey函数
-            javaClass.AddInterfaceMethord("deleteByPrimaryKey", "int")
-                .addParam( table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
+            //------------------
+            JavaMethod deletePrimaryKey = javaClass.AddMethord("deleteByPrimaryKey", "int")
+                .addParam(table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
+            deletePrimaryKey.addLogicNo(string.Format("return {0}.deleteByPrimaryKey({1});",mapper_value,table.getColumnKey().Name));
 
-            //输出Mapper
+            //输出Service
             WriteFile(path + "\\service", toFirstUp(table.getClassName() + "Service") + ".java", javaClass.toListString());
 
+            //输出其他辅助文件
+            CreateFile("JsonBean", path + "\\json", package, Properties.Resources.JsonBean);
+            CreateFile("PageResponse", path + "\\json\\response", package, Properties.Resources.PageResponse);
+            CreateFile("ErrorCode", path + "\\exception", package, Properties.Resources.ErrorCode);
+            CreateFile("ErrorCodeException", path + "\\exception", package, Properties.Resources.ErrorCodeException);
+        }
+
+        private static void CreateFile(string name, string pathDir, string package,string text)
+        {
+            //创建UTF8无BOM文件
+            var utf8WithBom = new System.Text.UTF8Encoding(false);  // 用true来指定包含bom
+            if (!Directory.Exists(pathDir))
+            {
+                Directory.CreateDirectory(pathDir);
+            }
+            string filePath = string.Format("{0}\\{1}.java", pathDir, name);
+            string Text = text.Replace("#package#", package).Replace("#notes#", "Created by AutoCode on " + DateTime.Now.ToShortDateString());
+            StreamWriter Writer = new StreamWriter(filePath, false, utf8WithBom);
+            Writer.Write(Text);
+            Writer.Close();
         }
     }
 }

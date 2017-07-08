@@ -14,21 +14,24 @@ namespace SpringBoot.Auto
         public static void CreateModel(DbTable table, string package, string path)
         {
             //创建Model类
-            JavaClass javaClass = new JavaClass(toFirstUp(table.getClassName()), package);
+            JavaClass javaClass = new JavaClass(toFirstUp(table.getClassName()), package)
+                .AddAnnotation(string.Format("@ApiModel(\"{0}\")",table.Notes));
             //头文件
             javaClass.AddImpoert("java.util.Date");
+            javaClass.AddImpoert("io.swagger.annotations.ApiModelProperty");
+            javaClass.AddImpoert("io.swagger.annotations.ApiModel");
             //添加变量
             foreach (DbColumn column in table.Column)
             {
-                javaClass.AddValue(column.getJavaTyep(), column.Name);
+                javaClass.AddValue(string.Format("@ApiModelProperty(\"{0}\")",column.Notes), column.getJavaTyep(), column.Name);
             }
             //添加函数
             foreach (DbColumn column in table.Column)
             {
                 javaClass.AddMethord("get" + toFirstUp(column.Name), column.getJavaTyep())
-                    .addLogicNo(string.Format("reutrn {0};", column.Name));
+                    .addLogicNo(string.Format("return {0};", column.Name));
 
-                javaClass.AddMethord("set" + toFirstUp(column.Name), column.getJavaTyep())
+                javaClass.AddMethord("set" + toFirstUp(column.Name), "void")
                     .addParam(column.getJavaTyep(), column.Name)
                     .addLogicNo(string.Format("this.{0} = {0};", column.Name));
             }

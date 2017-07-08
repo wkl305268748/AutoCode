@@ -48,7 +48,7 @@ namespace SpringBoot
                     reader.Close();
                 }
                 catch (Exception ee) {
-                    MessageBox.Show("数据库连接失败");
+                    MessageBox.Show("数据库连接失败" + ee.Message);
                 }
 
             }
@@ -145,61 +145,51 @@ namespace SpringBoot
                     ((BackgroundWorker)sender).ReportProgress(index,item.Value);
                     DbTable dbTalbe = new DbTable();
                     dbTalbe.Name = item.Value.ToString();
-
-                    List <Field> fieldList = new List<Field>();
+                    
                     //查询字段
                     string dbName = imageListBoxControl.Items[imageListBoxControl.SelectedIndex].Value.ToString();
                     string tableName = item.Value.ToString();
+
+                    string sql0 = string.Format("SHOW TABLE STATUS FROM {0} WHERE Name='{1}';", dbName,tableName);
+                    MySqlDataReader reader0 = DbHelperMySQL.ExecuteReader(sql0);
+                    while (reader0.Read())
+                    {
+                        dbTalbe.Notes = reader0.GetString("Comment");
+                    }
+                    reader0.Close();
 
                     string sql = "select column_name,data_type,column_key,character_maximum_length,column_comment from information_schema.COLUMNS where table_name = '{0}' and table_schema = '{1}';";
                     MySqlDataReader reader = DbHelperMySQL.ExecuteReader(string.Format(sql, tableName, dbName));
 
                     while (reader.Read())
                     {
-                        Field field = new Field();
-                        field.Name = reader.GetString("column_name");
-                        field.Type = reader.GetString("data_type");
-                        if (reader.GetString("column_key").Equals("PRI"))
-                            field.IsKey = true;
-                        else
-                            field.IsKey = false;
-
-                        field.Notes = reader.GetString("column_comment");
-                        fieldList.Add(field);
-
-
                         DbColumn column = new DbColumn();
                         column.Name = reader.GetString("column_name");
                         column.Type = reader.GetString("data_type");
-                        if (reader.GetString("column_key").Equals("PRI"))
-                            column.IsKey = true;
-                        else
-                            column.IsKey = false;
-
+                        column.IsKey = reader.GetString("column_key").Equals("PRI") ? true : false;
                         column.Notes = reader.GetString("column_comment");
                         dbTalbe.Column.Add(column);
                     }
+                    reader.Close();
                     //创建Model
                     if (checkModel.Checked)
                     {
-                        //ModelHelp.CreateModel(buttonPath.Text, textPackage.Text, tableName, fieldList);
                         AutoModel.CreateModel(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                     //创建Mapper
                     if (checkMapper.Checked)
                     {
-                        //MapperHelp.CreateMapper(buttonPath.Text, textPackage.Text, tableName, fieldList);
                         AutoMapper.CreateMapper(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                     //创建Service
                     if (checkService.Checked)
                     {
-                        ServiceHelp.CreateService(buttonPath.Text, textPackage.Text, tableName, fieldList);
+                        AutoService.CreateService(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                     //创建Controller
                     if (checkController.Checked)
                     {
-                        ControllerHelp.CreateController(buttonPath.Text, textPackage.Text, tableName, fieldList);
+                        AutoController.CreateController(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                 }
             }

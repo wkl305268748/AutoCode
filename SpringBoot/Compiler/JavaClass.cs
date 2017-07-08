@@ -28,7 +28,7 @@ namespace SpringBoot.Compiler
         }
 
         public JavaClass(string name, string package, bool isInterface) : this(name, package){
-            isInterface = true;
+            this.isInterface = true;
         }
 
         /// <summary>

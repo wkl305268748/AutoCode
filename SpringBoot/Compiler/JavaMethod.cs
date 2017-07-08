@@ -108,6 +108,12 @@ namespace SpringBoot.Compiler
             return logic;
         }
 
+        public JavaLogicException addLogicException(string catch_class)
+        {
+            JavaLogicException excep = new JavaLogicException(catch_class, indent + 1);
+            mMethodCode.Add(excep);
+            return excep;
+        }
 
         public List<string> toListString()
         {
@@ -150,7 +156,7 @@ namespace SpringBoot.Compiler
                 {
                     if (i == mParam.Count - 1)
                     {
-                        result.Add(mIndent + new string(' ', length) + string.Format("{0}){1}{{", mParam[i], mThrow);
+                        result.Add(mIndent + new string(' ', length) + string.Format("{0}){1}{{", mParam[i], mThrow));
                         break;
                     }
                     result.Add(mIndent + new string(' ', length) + mParam[i] + ",");

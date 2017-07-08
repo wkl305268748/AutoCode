@@ -48,20 +48,14 @@ namespace SpringBoot.DB
 
             foreach (string str in begin) {
                 if (name.IndexOf(str) == 0) {
-                    name = name.Remove(0, str.Length);
-                    break;
+                    return name.Remove(0, str.Length);
                 }
             }
-            string[] split = name.Split('_');
-            string result = "";
-            foreach (string sp in split) {
-                result += sp[0].ToString().ToUpper() + sp.Remove(0, 1);
-            }
-            return result;
+            return name;
         }
 
         /// <summary>
-        /// 获取表对应的小写Java类名称
+        /// 获取表对应的Java类名称
         /// </summary>
         /// <returns></returns>
         public string getClassLowName()
