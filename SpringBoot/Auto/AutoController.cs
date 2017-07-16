@@ -107,16 +107,16 @@ namespace SpringBoot.Auto
 
             selectPage.addLogicNo(string.Format("return new JsonBean(ErrorCode.SUCCESS, {0}.selectPage(offset,pageSize));",service_value));
 
-           
-            //deletePrimaryKey函数
+
+            //deleteByPrimaryKey函数
             //------------------
-            JavaMethod deletePrimaryKey = javaClass.AddMethord("deletePrimaryKey", string.Format("JsonBean"))
+            JavaMethod deleteByPrimaryKey = javaClass.AddMethord("deletePrimaryKey", string.Format("JsonBean"))
                 .addAnnotation(string.Format("@ApiOperation(value = \"删除指定的{0}\")", table.Name))
                 .addAnnotation(string.Format("@RequestMapping(value = \"/{{{0}}}\",method = RequestMethod.DELETE)", table.getColumnKey().Name))
                 .addAnnotation("@ResponseBody");
 
-            deletePrimaryKey.addParam("@ApiParam(value = \"查询主键\", required = true)@PathVariable()", table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
-            deletePrimaryKey.addLogicNo(string.Format("return new JsonBean(ErrorCode.SUCCESS, {0}.DeleteAdmin(id));", service_value));
+            deleteByPrimaryKey.addParam("@ApiParam(value = \"查询主键\", required = true)@PathVariable()", table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
+            deleteByPrimaryKey.addLogicNo(string.Format("return new JsonBean(ErrorCode.SUCCESS, {0}.deleteByPrimaryKey(id));", service_value));
 
             //输出Controller
             WriteFile(path + "\\controller", toFirstUp(table.getClassName() + "Controller") + ".java", javaClass.toListString());

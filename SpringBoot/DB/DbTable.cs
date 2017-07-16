@@ -43,16 +43,18 @@ namespace SpringBoot.DB
         /// </summary>
         /// <returns></returns>
         public string getClassName() {
+            string mname = name;
+
             List<string> begin = new List<string>();
             begin.Add("tb_");
 
             foreach (string str in begin) {
-                if (name.IndexOf(str) == 0) {
-                    name = name.Remove(0, str.Length);
+                if (mname.IndexOf(str) == 0) {
+                    mname = mname.Remove(0, str.Length);
                     break;
                 }
             }
-            string[] split = name.Split('_');
+            string[] split = mname.Split('_');
             string result = "";
             foreach (string sp in split) {
                 result += sp[0].ToString().ToUpper() + sp.Remove(0, 1);
@@ -66,17 +68,18 @@ namespace SpringBoot.DB
         /// <returns></returns>
         public string getClassLowName()
         {
+            string mname = name;
             List<string> begin = new List<string>();
             begin.Add("tb_");
 
             foreach (string str in begin)
             {
-                if (name.IndexOf(str) == 0)
+                if (mname.IndexOf(str) == 0)
                 {
-                    return name.Remove(0, str.Length);
+                    return mname.Remove(0, str.Length);
                 }
             }
-            return name;
+            return mname;
         }
 
         /// <summary>

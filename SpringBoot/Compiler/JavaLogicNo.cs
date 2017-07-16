@@ -11,10 +11,8 @@ namespace SpringBoot.Compiler
         List<string> codes;
 
         /// <summary>
-        /// 创建if语句
+        /// 创建普通语句
         /// </summary>
-        /// <param name="mIf">判断条件</param>
-        /// <param name="isElse">是否有else</param>
         public JavaLogicNo(string code,int indent)
         {
             this.indent = indent;
