@@ -24,6 +24,7 @@ namespace SpringBoot.Auto
             javaClass.AddImpoert("org.springframework.beans.factory.annotation.Autowired")
                 .AddImpoert("io.swagger.annotations.*")
                 .AddImpoert("org.springframework.web.bind.annotation.*")
+                .AddImpoert("java.util.Date")
                 .AddImpoert(string.Format("{0}.json.JsonBean", package))
                 .AddImpoert(string.Format("{0}.json.response.PageResponse", package))
                 .AddImpoert(string.Format("{0}.exception.ErrorCodeException", package))
@@ -32,7 +33,7 @@ namespace SpringBoot.Auto
                 .AddImpoert(string.Format("{0}.service.{1}", package, service_class));
             //添加注解
             javaClass
-                .AddAnnotation(string.Format("@Api(value = \"/v1/{0}\", description = \"{1}\")",table.Name,table.Notes))
+                .AddAnnotation(string.Format("@Api(value = \"/v1/{0}\", description = \"{1}\")", table.getClassLowName(), table.Notes))
                 .AddAnnotation(string.Format("@RequestMapping(value = \" /v1/{0}\")", table.getClassLowName()))
                 .AddAnnotation("@RestController")
                 .AddValue("@Autowired", service_class, service_value);
@@ -49,7 +50,7 @@ namespace SpringBoot.Auto
             {
                 if (!col.IsKey)
                 {
-                    insert.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, col.IsNull.ToString().ToLower(), col.Name), col.getJavaTyep(), col.Name);
+                    insert.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, col.IsNotNull.ToString().ToLower(), col.Name), col.getJavaTyep(), col.Name);
                     if (index == 0)
                         param += col.Name;
                     else
@@ -73,7 +74,7 @@ namespace SpringBoot.Auto
                 if (col.IsKey)
                     update.addParam("@ApiParam(value = \"查询主键\", required = true)@PathVariable()", col.getJavaTyep(),col.Name);
                 else
-                    update.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, col.IsNull.ToString().ToLower(), col.Name), col.getJavaTyep(), col.Name);
+                    update.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, col.IsNotNull.ToString().ToLower(), col.Name), col.getJavaTyep(), col.Name);
                 if (index == 0) 
                     param += col.Name;
                 else

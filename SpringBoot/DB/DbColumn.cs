@@ -11,7 +11,8 @@ namespace SpringBoot.DB
         string type;
         string lenth;
         bool isKey;
-        bool isNull;
+        bool isNotNull;
+
         string notes;
 
         Dictionary<string, string> sqlTojava = new Dictionary<string, string>();
@@ -94,18 +95,13 @@ namespace SpringBoot.DB
             }
         }
 
-        public bool IsNull
-        {
-            get
-            {
-                return isNull;
-            }
 
-            set
-            {
-                isNull = value;
-            }
+        public bool IsNotNull
+        {
+            get { return isNotNull; }
+            set { isNotNull = value; }
         }
+
 
         /// <summary>
         /// 获取SQL对应的Java类型

@@ -158,16 +158,17 @@ namespace SpringBoot
                     }
                     reader0.Close();
 
-                    string sql = "select column_name,data_type,column_key,character_maximum_length,column_comment from information_schema.COLUMNS where table_name = '{0}' and table_schema = '{1}';";
+                    string sql = "select * from information_schema.COLUMNS where table_name = '{0}' and table_schema = '{1}';";
                     MySqlDataReader reader = DbHelperMySQL.ExecuteReader(string.Format(sql, tableName, dbName));
 
                     while (reader.Read())
                     {
                         DbColumn column = new DbColumn();
-                        column.Name = reader.GetString("column_name");
-                        column.Type = reader.GetString("data_type");
-                        column.IsKey = reader.GetString("column_key").Equals("PRI") ? true : false;
-                        column.Notes = reader.GetString("column_comment");
+                        column.Name = reader.GetString("COLUMN_NAME");
+                        column.Type = reader.GetString("DATA_TYPE");
+                        column.IsKey = reader.GetString("COLUMN_KEY").Equals("PRI") ? true : false;
+                        column.Notes = reader.GetString("COLUMN_COMMENT");
+                        column.IsNotNull = reader.GetString("IS_NULLABLE").Equals("YES") ? false : true;
                         dbTalbe.Column.Add(column);
                     }
                     reader.Close();
