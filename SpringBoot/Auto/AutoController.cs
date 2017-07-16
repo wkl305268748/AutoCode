@@ -34,14 +34,14 @@ namespace SpringBoot.Auto
             //添加注解
             javaClass
                 .AddAnnotation(string.Format("@Api(value = \"/v1/{0}\", description = \"{1}\")", table.getClassLowName(), table.Notes))
-                .AddAnnotation(string.Format("@RequestMapping(value = \" /v1/{0}\")", table.getClassLowName()))
+                .AddAnnotation(string.Format("@RequestMapping(value = \"/v1/{0}\")", table.getClassLowName()))
                 .AddAnnotation("@RestController")
                 .AddValue("@Autowired", service_class, service_value);
 
             //Insert函数
             //--------------------
             JavaMethod insert = javaClass.AddMethord("Insert", string.Format("JsonBean<{0}>", model_class))
-                .addAnnotation(string.Format("@ApiOperation(value = \"增加{0}\")", table.Name))
+                .addAnnotation(string.Format("@ApiOperation(value = \"增加{0}\")", table.getClassName()))
                 .addAnnotation("@RequestMapping(value = \"\",method = RequestMethod.POST)")
                 .addAnnotation("@ResponseBody");
             string param = "";
@@ -64,7 +64,7 @@ namespace SpringBoot.Auto
             //update函数
             //------------------
             JavaMethod update = javaClass.AddMethord("update", string.Format("JsonBean<{0}>", model_class))
-                .addAnnotation(string.Format("@ApiOperation(value = \"修改指定的{0}\")", table.Name))
+                .addAnnotation(string.Format("@ApiOperation(value = \"修改指定的{0}\")", table.getClassName()))
                 .addAnnotation(string.Format("@RequestMapping(value = \"/{{{0}}}\",method = RequestMethod.PUT)", table.getColumnKey().Name))
                 .addAnnotation("@ResponseBody");
             param = "";
@@ -88,7 +88,7 @@ namespace SpringBoot.Auto
             //selectByPrimaryKey函数
             //------------------
             JavaMethod selectByPrimaryKey = javaClass.AddMethord("selectByPrimaryKey", string.Format("JsonBean<{0}>", model_class))
-                .addAnnotation(string.Format("@ApiOperation(value = \"获取指定的{0}\")", table.Name))
+                .addAnnotation(string.Format("@ApiOperation(value = \"获取指定的{0}\")", table.getClassName()))
                 .addAnnotation(string.Format("@RequestMapping(value = \"/{{{0}}}\",method = RequestMethod.GET)", table.getColumnKey().Name))
                 .addAnnotation("@ResponseBody");
 
@@ -100,7 +100,7 @@ namespace SpringBoot.Auto
             //selectPage函数
             //------------------
             JavaMethod selectPage = javaClass.AddMethord("selectPage", string.Format("JsonBean<PageResponse<{0}>>", model_class))
-                .addAnnotation(string.Format("@ApiOperation(value = \"列出所有的{0}\")", table.Name))
+                .addAnnotation(string.Format("@ApiOperation(value = \"列出所有的{0}\")", table.getClassName()))
                 .addAnnotation(string.Format("@RequestMapping(value = \"/page\",method = RequestMethod.GET)"))
                 .addAnnotation("@ResponseBody")
                 .addParam("@ApiParam(value = \"从第几个开始列出\") @RequestParam(required = false, defaultValue = \"0\")", "Integer", "offset")
@@ -112,7 +112,7 @@ namespace SpringBoot.Auto
             //deleteByPrimaryKey函数
             //------------------
             JavaMethod deleteByPrimaryKey = javaClass.AddMethord("deletePrimaryKey", string.Format("JsonBean"))
-                .addAnnotation(string.Format("@ApiOperation(value = \"删除指定的{0}\")", table.Name))
+                .addAnnotation(string.Format("@ApiOperation(value = \"删除指定的{0}\")", table.getClassName()))
                 .addAnnotation(string.Format("@RequestMapping(value = \"/{{{0}}}\",method = RequestMethod.DELETE)", table.getColumnKey().Name))
                 .addAnnotation("@ResponseBody");
 
