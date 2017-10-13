@@ -72,7 +72,7 @@
             // 
             // texthost
             // 
-            this.texthost.EditValue = "localhost";
+            this.texthost.EditValue = "rm-bp1d79mlswd465ue0o.mysql.rds.aliyuncs.com";
             this.texthost.Location = new System.Drawing.Point(220, 77);
             this.texthost.Name = "texthost";
             this.texthost.Size = new System.Drawing.Size(221, 20);
@@ -122,7 +122,7 @@
             // 
             // textpass
             // 
-            this.textpass.EditValue = "avatar123";
+            this.textpass.EditValue = "Avatar123";
             this.textpass.Location = new System.Drawing.Point(220, 218);
             this.textpass.Name = "textpass";
             this.textpass.Size = new System.Drawing.Size(96, 20);

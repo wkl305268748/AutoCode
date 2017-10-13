@@ -68,7 +68,10 @@ namespace SpringBoot.Auto
             foreach (DbColumn col in table.Column)
             {
                 if (!col.IsKey)
-                    update.addLogicNo(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+                {
+                    update.addLogicIf(string.Format("{0} != null", col.Name))
+                        .addIfCode(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+                }
             }
             update.addLogicNo(string.Format("{0}.update({1});", mapper_value, model_value));
             update.addLogicNo(string.Format("return {0};", model_value));

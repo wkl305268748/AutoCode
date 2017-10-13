@@ -28,6 +28,8 @@ namespace SpringBoot.DB
             sqlTojava.Add("date", "Date");
             sqlTojava.Add("datetime", "Date");
             sqlTojava.Add("text", "String");
+            sqlTojava.Add("double", "Double");
+            sqlTojava.Add("bigint", "Long");
         }
 
         public string Name
