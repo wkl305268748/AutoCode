@@ -9,6 +9,7 @@ public class ErrorCodeException extends Exception{
     ErrorCode errorCode;
     public static final ErrorCode PARAM_ERROR = new ErrorCode(101, "参数错误");
     public static final ErrorCode DATA_NO_ERROR = new ErrorCode(102, "数据不存在");
+    public static final ErrorCode DB_ERROR = new ErrorCode(103, "数据库操作错误");
 
     public ErrorCodeException(ErrorCode errorCode){
         this.errorCode = errorCode;

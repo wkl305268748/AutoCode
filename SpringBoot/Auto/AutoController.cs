@@ -40,7 +40,7 @@ namespace SpringBoot.Auto
 
             //Insert函数
             //--------------------
-            JavaMethod insert = javaClass.AddMethord("Insert", string.Format("JsonBean<{0}>", model_class))
+            JavaMethod insert = javaClass.AddMethord("insert", string.Format("JsonBean<{0}>", model_class))
                 .addAnnotation(string.Format("@ApiOperation(value = \"增加{0}\")", table.getClassName()))
                 .addAnnotation("@RequestMapping(value = \"\",method = RequestMethod.POST)")
                 .addAnnotation("@ResponseBody");
@@ -50,6 +50,8 @@ namespace SpringBoot.Auto
             {
                 if (!col.IsKey)
                 {
+                    if (col.Name.Equals("time"))
+                        continue;
                     insert.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, col.IsNotNull.ToString().ToLower(), col.Name), col.getJavaTyep(), col.Name);
                     if (index == 0)
                         param += col.Name;
@@ -71,10 +73,12 @@ namespace SpringBoot.Auto
             index = 0;
             foreach (DbColumn col in table.Column)
             {
+                if (col.Name.Equals("time"))
+                    continue;
                 if (col.IsKey)
                     update.addParam("@ApiParam(value = \"查询主键\", required = true)@PathVariable()", col.getJavaTyep(),col.Name);
                 else
-                    update.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, col.IsNotNull.ToString().ToLower(), col.Name), col.getJavaTyep(), col.Name);
+                    update.addParam(string.Format("@ApiParam(value = \"{0}\",required = {1})@RequestParam(value = \"{2}\",required = {1})", col.Notes, "false", col.Name), col.getJavaTyep(), col.Name);
                 if (index == 0) 
                     param += col.Name;
                 else
@@ -117,7 +121,10 @@ namespace SpringBoot.Auto
                 .addAnnotation("@ResponseBody");
 
             deleteByPrimaryKey.addParam("@ApiParam(value = \"查询主键\", required = true)@PathVariable()", table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
-            deleteByPrimaryKey.addLogicNo(string.Format("return new JsonBean(ErrorCode.SUCCESS, {0}.deleteByPrimaryKey(id));", service_value));
+            deleteByPrimaryKey.addLogicException("ErrorCodeException")
+                .addTryCode(string.Format("{0}.deleteByPrimaryKey(id);", service_value, table.getColumnKey().Name))
+                .addTryCode(string.Format("return new JsonBean(ErrorCode.SUCCESS);", service_value, table.getColumnKey().Name))
+                .addCatchCode("return new JsonBean(e.getErrorCode());");
 
             //输出Controller
             WriteFile(path + "\\controller", toFirstUp(table.getClassName() + "Controller") + ".java", javaClass.toListString());

@@ -158,6 +158,7 @@ namespace SpringBoot
                     }
                     reader0.Close();
 
+                    //查询字段属性
                     string sql = "select * from information_schema.COLUMNS where table_name = '{0}' and table_schema = '{1}';";
                     MySqlDataReader reader = DbHelperMySQL.ExecuteReader(string.Format(sql, tableName, dbName));
 
@@ -169,9 +170,32 @@ namespace SpringBoot
                         column.IsKey = reader.GetString("COLUMN_KEY").Equals("PRI") ? true : false;
                         column.Notes = reader.GetString("COLUMN_COMMENT");
                         column.IsNotNull = reader.GetString("IS_NULLABLE").Equals("YES") ? false : true;
+                        column.IsFkey = false;
                         dbTalbe.Column.Add(column);
                     }
                     reader.Close();
+
+                    //查询外键关系
+                    string sql1 = "select * from information_schema.KEY_COLUMN_USAGE where table_name = '{0}' and table_schema = '{1}';";
+                    MySqlDataReader reader1 = DbHelperMySQL.ExecuteReader(string.Format(sql1, tableName, dbName));
+
+                    while (reader1.Read())
+                    {
+                        string fkeyName = reader1.GetString("CONSTRAINT_NAME");
+                        if (!fkeyName.Equals("PRIMARY")) {
+                            string columnName = reader1.GetString("COLUMN_NAME");
+                            foreach (DbColumn items in dbTalbe.Column) {
+                                if (items.Name.Equals(columnName)) {
+                                    items.IsFkey = true;
+                                    items.FkTable = reader1.GetString("REFERENCED_TABLE_NAME");
+                                    items.FkColumn = reader1.GetString("REFERENCED_COLUMN_NAME");
+                                }
+                            }
+                        }
+                    }
+                    reader1.Close();
+
+
                     //创建Model
                     if (checkModel.Checked)
                     {
@@ -191,6 +215,7 @@ namespace SpringBoot
                     if (checkController.Checked)
                     {
                         AutoController.CreateController(dbTalbe, textPackage.Text, buttonPath.Text);
+                        AutoFegin.CreateFeign(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                 }
             }

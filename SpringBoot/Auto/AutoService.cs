@@ -40,6 +40,8 @@ namespace SpringBoot.Auto
             //--------------------
             JavaMethod insert = javaClass.AddMethord("insert", model_class);
             foreach (DbColumn col in table.Column){
+                if (col.Name.Equals("time"))
+                    continue;
                 if (!col.IsKey)
                     insert.addParam(col.getJavaTyep(), col.Name);
             }
@@ -47,8 +49,13 @@ namespace SpringBoot.Auto
             //set语句
             foreach (DbColumn col in table.Column)
             {
-                if (!col.IsKey)
+                if (!col.IsKey) {
+                    if (col.Name.Equals("time")) { 
+                        insert.addLogicNo(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), "new Date()"));
+                        continue;
+                    }
                     insert.addLogicNo(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+                }
             }
             insert.addLogicNo(string.Format("{0}.insert({1});",mapper_value,model_value));
             insert.addLogicNo(string.Format("return {0};", model_value));
@@ -59,6 +66,8 @@ namespace SpringBoot.Auto
                 .addThrow("ErrorCodeException");
             foreach (DbColumn col in table.Column)
             {
+                if (col.Name.Equals("time"))
+                    continue;
                 update.addParam(col.getJavaTyep(), col.Name);
             }
             update.addLogicNo(string.Format("{0} {1} = {2}.selectByPrimaryKey({3});",model_class,model_value,mapper_value,table.getColumnKey().Name));
@@ -69,6 +78,9 @@ namespace SpringBoot.Auto
             {
                 if (!col.IsKey)
                 {
+                    if (col.Name.Equals("time"))
+                        continue;
+
                     update.addLogicIf(string.Format("{0} != null", col.Name))
                         .addIfCode(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
                 }
@@ -100,9 +112,11 @@ namespace SpringBoot.Auto
 
             //deletePrimaryKey函数
             //------------------
-            JavaMethod deletePrimaryKey = javaClass.AddMethord("deleteByPrimaryKey", "int")
+            JavaMethod deletePrimaryKey = javaClass.AddMethord("deleteByPrimaryKey", "void")
+                .addThrow("ErrorCodeException")
                 .addParam(table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
-            deletePrimaryKey.addLogicNo(string.Format("return {0}.deleteByPrimaryKey({1});",mapper_value,table.getColumnKey().Name));
+            deletePrimaryKey.addLogicIf(string.Format("{0}.deleteByPrimaryKey({1}) != 1", mapper_value, table.getColumnKey().Name))
+                        .addIfCode("throw new ErrorCodeException(ErrorCodeException.DB_ERROR);");
 
             //输出Service
             WriteFile(path + "\\service", toFirstUp(table.getClassName() + "Service") + ".java", javaClass.toListString());

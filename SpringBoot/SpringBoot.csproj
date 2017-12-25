@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auto\AutoClass.cs" />
+    <Compile Include="Auto\AutoFeign.cs" />
     <Compile Include="Auto\AutoController.cs" />
     <Compile Include="Auto\AutoService.cs" />
     <Compile Include="Auto\AutoMapper.cs" />

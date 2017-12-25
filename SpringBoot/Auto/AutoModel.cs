@@ -24,6 +24,11 @@ namespace SpringBoot.Auto
             foreach (DbColumn column in table.Column)
             {
                 javaClass.AddValue(string.Format("@ApiModelProperty(\"{0}\")",column.Notes), column.getJavaTyep(), column.Name);
+
+                //外键情况
+                if (column.IsFkey) {
+                    javaClass.AddValue(string.Format("@ApiModelProperty(\"{0}\")", "外键对象-"+ column.Notes), column.getFkClassName(), column.getFkClassLowName());
+                }
             }
             //添加函数
             foreach (DbColumn column in table.Column)

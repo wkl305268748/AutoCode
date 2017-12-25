@@ -12,6 +12,12 @@ namespace SpringBoot.DB
         string lenth;
         bool isKey;
         bool isNotNull;
+        //是否是外键
+        bool isFkey;
+        //外键关联的表名称
+        string fkTable;
+        //外键关联的字段名称
+        string fkColumn;
 
         string notes;
 
@@ -27,6 +33,7 @@ namespace SpringBoot.DB
             sqlTojava.Add("float", "Float");
             sqlTojava.Add("date", "Date");
             sqlTojava.Add("datetime", "Date");
+            sqlTojava.Add("time", "Date");
             sqlTojava.Add("text", "String");
             sqlTojava.Add("double", "Double");
             sqlTojava.Add("bigint", "Long");
@@ -104,6 +111,45 @@ namespace SpringBoot.DB
             set { isNotNull = value; }
         }
 
+        public bool IsFkey
+        {
+            get
+            {
+                return isFkey;
+            }
+
+            set
+            {
+                isFkey = value;
+            }
+        }
+
+        public string FkTable
+        {
+            get
+            {
+                return fkTable;
+            }
+
+            set
+            {
+                fkTable = value;
+            }
+        }
+
+        public string FkColumn
+        {
+            get
+            {
+                return fkColumn;
+            }
+
+            set
+            {
+                fkColumn = value;
+            }
+        }
+
 
         /// <summary>
         /// 获取SQL对应的Java类型
@@ -111,6 +157,54 @@ namespace SpringBoot.DB
         /// <returns></returns>
         public string getJavaTyep() {
             return sqlTojava[type];
+        }
+
+        /// <summary>
+        /// 获取Fk表对应的Java类名称
+        /// </summary>
+        /// <returns></returns>
+        public string getFkClassName()
+        {
+            string mname = fkTable;
+
+            List<string> begin = new List<string>();
+            begin.Add("tb_");
+
+            foreach (string str in begin)
+            {
+                if (mname.IndexOf(str) == 0)
+                {
+                    mname = mname.Remove(0, str.Length);
+                    break;
+                }
+            }
+            string[] split = mname.Split('_');
+            string result = "";
+            foreach (string sp in split)
+            {
+                result += sp[0].ToString().ToUpper() + sp.Remove(0, 1);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 获取Fk表对应的小写Java类名称
+        /// </summary>
+        /// <returns></returns>
+        public string getFkClassLowName()
+        {
+            string mname = fkTable;
+            List<string> begin = new List<string>();
+            begin.Add("tb_");
+
+            foreach (string str in begin)
+            {
+                if (mname.IndexOf(str) == 0)
+                {
+                    return mname.Remove(0, str.Length);
+                }
+            }
+            return mname;
         }
 
     }

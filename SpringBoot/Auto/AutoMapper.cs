@@ -30,6 +30,8 @@ namespace SpringBoot.Auto
             string values = "";
             string column_valus = "";
             int index = 0;
+            string fk_column_valus = "";
+            int fk_index = 0;
             foreach (DbColumn col in table.Column) {
                 if (!col.IsKey)
                 {
@@ -47,6 +49,14 @@ namespace SpringBoot.Auto
                     }
                     index++;
                 }
+
+                if (col.IsFkey) {
+                    if (fk_index != 0)
+                        fk_column_valus += ",";
+                    fk_column_valus += string.Format("@Result(property=\"{0}\",column=\"{1}\",one = @One(select=\"com.avatarcn.syllabus.mapper.{2}Mapper.selectByPrimaryKey\")),", col.getFkClassLowName(), col.Name, col.getFkClassName());
+                    fk_column_valus += string.Format("@Result(property=\"{0}\",column=\"{0}\")", col.Name);
+                    fk_index++;
+                }
             }
 
             //insert函数
@@ -63,11 +73,13 @@ namespace SpringBoot.Auto
             //select函数
             javaClass.AddInterfaceMethord("selectByPrimaryKey", model_class)
                 .addAnnotation(string.Format("@Select(\"SELECT * FROM {0} WHERE {1}=#{{{1}}}\")", table.Name, table.getColumnKey().Name))
+                .addAnnotation(string.Format("@Results({{{0}}})", fk_column_valus))
                 .addParam(string.Format("@Param(value = \"{0}\")", table.getColumnKey().Name), table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
 
             //selectPage函数
             javaClass.AddInterfaceMethord("selectPage", string.Format("List<{0}>", model_class))
                 .addAnnotation(string.Format("@Select(\"SELECT * FROM {0} limit #{{offset}},#{{pageSize}}\")", table.Name))
+                .addAnnotation(string.Format("@Results({{{0}}})", fk_column_valus))
                 .addParam("@Param(value = \"offset\")", "Integer", "offset")
                 .addParam("@Param(value = \"pageSize\")", "Integer", "pageSize");
 

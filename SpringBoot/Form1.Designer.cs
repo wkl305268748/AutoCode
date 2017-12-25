@@ -286,7 +286,7 @@
             // 
             // textPackage
             // 
-            this.textPackage.EditValue = "com.kenny.service.logistics";
+            this.textPackage.EditValue = "com.lms.server";
             this.textPackage.Location = new System.Drawing.Point(193, 79);
             this.textPackage.MenuManager = this.ribbonControl1;
             this.textPackage.Name = "textPackage";
