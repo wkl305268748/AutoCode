@@ -200,6 +200,7 @@ namespace SpringBoot
                     if (checkModel.Checked)
                     {
                         AutoModel.CreateModel(dbTalbe, textPackage.Text, buttonPath.Text);
+                        AutoModelSwagger.CreateModel(dbTalbe, textPackage.Text, buttonPath.Text);
                     }
                     //创建Mapper
                     if (checkMapper.Checked)

@@ -8,23 +8,26 @@ using SpringBoot.DB;
 
 namespace SpringBoot.Auto
 {
-    public class AutoModel:AutoClass
+    public class AutoModelSwagger:AutoClass
     {
 
         public static void CreateModel(DbTable table, string package, string path)
         {
             //创建Model类
-            JavaClass javaClass = new JavaClass(toFirstUp(table.getClassName()), package);
+            JavaClass javaClass = new JavaClass(toFirstUp(table.getClassName()), package)
+                .AddAnnotation(string.Format("@ApiModel(\"{0}\")",table.Notes));
             //头文件
             javaClass.AddImpoert("java.util.Date");
+            javaClass.AddImpoert("io.swagger.annotations.ApiModelProperty");
+            javaClass.AddImpoert("io.swagger.annotations.ApiModel");
             //添加变量
             foreach (DbColumn column in table.Column)
             {
-                javaClass.AddValue(column.getJavaTyep(), column.Name);
+                javaClass.AddValue(string.Format("@ApiModelProperty(\"{0}\")",column.Notes), column.getJavaTyep(), column.Name);
 
                 //外键情况
                 if (column.IsFkey) {
-                    javaClass.AddValue(column.getFkClassName(), column.getFkClassLowName());
+                    javaClass.AddValue(string.Format("@ApiModelProperty(\"{0}\")", "外键对象-"+ column.Notes), column.getFkClassName(), column.getFkClassLowName());
                 }
             }
             //添加函数
@@ -38,7 +41,7 @@ namespace SpringBoot.Auto
                     .addLogicNo(string.Format("this.{0} = {0};", column.Name));
             }
 
-            WriteFile(path + "\\model_no", toFirstUp(table.getClassName()) + ".java", javaClass.toListString());
+            WriteFile(path + "\\model", toFirstUp(table.getClassName()) + ".java", javaClass.toListString());
 
         }
     }
