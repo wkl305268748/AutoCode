@@ -29,6 +29,7 @@ namespace SpringBoot.Auto
                 .AddImpoert("java.util.ArrayList")
                 .AddImpoert(string.Format("{0}.json.response.PageResponse", package))
                 .AddImpoert(string.Format("{0}.exception.ErrorCodeException", package))
+                .AddImpoert(string.Format("{0}.exception.ErrorCode", package))
                 .AddImpoert(string.Format("{0}.model.{1}", package,model_class))
                 .AddImpoert(string.Format("{0}.mapper.{1}", package, mapper_class));
             //添加注解
@@ -72,7 +73,7 @@ namespace SpringBoot.Auto
             }
             update.addLogicNo(string.Format("{0} {1} = {2}.selectByPrimaryKey({3});",model_class,model_value,mapper_value,table.getColumnKey().Name));
             update.addLogicIf(string.Format("{0} == null", model_value))
-                .addIfCode("throw new ErrorCodeException(ErrorCodeException.DATA_NO_ERROR);");
+                .addIfCode("throw new ErrorCodeException(ErrorCode.DATA_NO_ERROR);");
             //set语句
             foreach (DbColumn col in table.Column)
             {
@@ -81,8 +82,8 @@ namespace SpringBoot.Auto
                     if (col.Name.Equals("time"))
                         continue;
 
-                    update.addLogicIf(string.Format("{0} != null", col.Name))
-                        .addIfCode(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+                    //update.addLogicIf(string.Format("{0} != null", col.Name)).addIfCode(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
+                    update.addLogicNo(string.Format("{0}.set{1}({2});", model_value, toFirstUp(col.Name), col.Name));
                 }
             }
             update.addLogicNo(string.Format("{0}.update({1});", mapper_value, model_value));
@@ -95,7 +96,7 @@ namespace SpringBoot.Auto
                 .addParam(table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
             selectByPrimaryKey.addLogicNo(string.Format("{0} {1} = {2}.selectByPrimaryKey({3});", model_class, model_value, mapper_value, table.getColumnKey().Name));
             selectByPrimaryKey.addLogicIf(string.Format("{0} == null", model_value))
-                .addIfCode("throw new ErrorCodeException(ErrorCodeException.DATA_NO_ERROR);");
+                .addIfCode("throw new ErrorCodeException(ErrorCode.DATA_NO_ERROR);");
             selectByPrimaryKey.addLogicNo(string.Format("return {0};", model_value));
 
             //selectPage函数
@@ -116,7 +117,7 @@ namespace SpringBoot.Auto
                 .addThrow("ErrorCodeException")
                 .addParam(table.getColumnKey().getJavaTyep(), table.getColumnKey().Name);
             deletePrimaryKey.addLogicIf(string.Format("{0}.deleteByPrimaryKey({1}) != 1", mapper_value, table.getColumnKey().Name))
-                        .addIfCode("throw new ErrorCodeException(ErrorCodeException.DB_ERROR);");
+                        .addIfCode("throw new ErrorCodeException(ErrorCode.DB_ERROR);");
 
             //输出Service
             WriteFile(path + "\\service", toFirstUp(table.getClassName() + "Service") + ".java", javaClass.toListString());
